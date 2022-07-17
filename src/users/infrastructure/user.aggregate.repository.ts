@@ -47,4 +47,17 @@ export class UserAggregateRepository implements AggregateRepository<UserAggregat
 
     return userAggregate
   }
+
+  public async getByEmail(email: string): Promise<UserAggregate | undefined> {
+    const snapshot = await UserSnapshotModel.query().findOne({ email })
+
+    if (snapshot === undefined) {
+      return undefined
+    }
+
+    const userAggregate = new UserAggregate()
+    userAggregate.restore(snapshot)
+
+    return userAggregate
+  }
 }

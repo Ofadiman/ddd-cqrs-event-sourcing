@@ -5,6 +5,7 @@ import { UserCreatedEvent } from './events/user-created.event'
 import { PasswordChangedEvent } from './events/password-changed.event'
 import { UserDeletedEvent } from './events/user-deleted.event'
 import { Aggregate } from '../../core/ddd/aggregate'
+import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception'
 
 export enum UserAggregateEventEnum {
   Created = 'created',
@@ -57,12 +58,23 @@ export class UserAggregate
     }
   }
 
-  public create(args: ConstructorParameters<typeof UserCreatedEvent>[0]) {
+  public register(args: {
+    existingUser: UserAggregate | undefined
+    newUserDetails: {
+      name: string
+      email: string
+      passwordHash: string
+    }
+  }) {
+    if (args.existingUser) {
+      throw new UserAlreadyExistsException({ email: args.newUserDetails.email })
+    }
+
     this.emit(
       new UserCreatedEvent({
-        name: args.name,
-        email: args.email,
-        passwordHash: args.passwordHash,
+        name: args.newUserDetails.name,
+        email: args.newUserDetails.email,
+        passwordHash: args.newUserDetails.passwordHash,
       }),
     )
   }

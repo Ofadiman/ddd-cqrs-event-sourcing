@@ -14,14 +14,18 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
   ) {}
 
   public async handle(command: CreateUserCommand): Promise<CommandOutput<CreateUserCommand>> {
+    const existingUser = await this.userAggregateRepository.getByEmail(command.input.email)
     const passwordHash = await this.userPasswordService.hash(command.input.password)
 
     const userAggregate = new UserAggregate()
 
-    userAggregate.create({
-      name: command.input.name,
-      email: command.input.email,
-      passwordHash: passwordHash,
+    userAggregate.register({
+      existingUser,
+      newUserDetails: {
+        name: command.input.name,
+        email: command.input.email,
+        passwordHash: passwordHash,
+      },
     })
 
     const snapshotId = await this.userAggregateRepository.save(userAggregate)
