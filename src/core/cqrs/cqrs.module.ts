@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common'
-import { CommandBus } from './commands/command-bus'
+import { CommandBus } from './command/command-bus'
 import { QueryBus } from './query/query-bus'
 
 @Module({

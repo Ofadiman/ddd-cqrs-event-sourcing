@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common'
 import { RegisterUserCommand } from '../application/register-user/register-user.command'
 import { RegisterUserRequestBodyDto, RegisterUserResponseBodyDto } from './dto/register-user.dto'
-import { CommandBus } from '../../core/cqrs/commands/command-bus'
+import { CommandBus } from '../../core/cqrs/command/command-bus'
 import { ChangeUserPasswordRequestBodyDto } from './dto/change-user-password.dto'
 import { ChangeUserPasswordCommand } from '../application/change-user-password/change-user-password.command'
 import { DeleteUserRequestParamDto } from './dto/delete-user.dto'

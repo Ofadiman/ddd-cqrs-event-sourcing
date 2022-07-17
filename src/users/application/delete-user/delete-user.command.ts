@@ -1,4 +1,4 @@
-import { Command } from '../../../core/cqrs/commands/command'
+import { Command } from '../../../core/cqrs/command/command'
 
 type DeleteUserCommandInput = {
   userId: string
