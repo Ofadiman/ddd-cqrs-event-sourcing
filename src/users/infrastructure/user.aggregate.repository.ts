@@ -6,7 +6,7 @@ import { UserEventModel } from '../../database/models/user.event.model'
 
 export type AggregateRepository<Aggregate> = {
   save(aggregate: Aggregate): Promise<string>
-  getById(id: string): Promise<Aggregate>
+  getById(id: string): Promise<Aggregate | undefined>
 }
 
 @Injectable()
@@ -35,11 +35,11 @@ export class UserAggregateRepository implements AggregateRepository<UserAggregat
     return snapshot.id
   }
 
-  public async getById(snapshotId: string): Promise<UserAggregate> {
-    const snapshot = await UserSnapshotModel.query().findById(snapshotId)
+  public async getById(snapshotId: string): Promise<UserAggregate | undefined> {
+    const snapshot = await UserSnapshotModel.query().findOne({ id: snapshotId, deleted_at: null })
 
     if (snapshot === undefined) {
-      throw new Error('Aggregate not found!')
+      return undefined
     }
 
     const userAggregate = new UserAggregate()
@@ -49,7 +49,7 @@ export class UserAggregateRepository implements AggregateRepository<UserAggregat
   }
 
   public async getByEmail(email: string): Promise<UserAggregate | undefined> {
-    const snapshot = await UserSnapshotModel.query().findOne({ email })
+    const snapshot = await UserSnapshotModel.query().findOne({ email, deleted_at: null })
 
     if (snapshot === undefined) {
       return undefined
