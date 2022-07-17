@@ -1,4 +1,4 @@
-create type user_aggregate_event as enum ('created', 'password_changed', 'deleted');
+create type user_aggregate_event as enum ('registered', 'password_changed', 'deleted');
 
 drop type if exists user_aggregate_event;
 
