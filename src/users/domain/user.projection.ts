@@ -1,12 +1,10 @@
 import { v4 } from 'uuid'
-import {
-  DomainEvent,
-  PasswordChangedEvent,
-  UserAggregateEventEnum,
-  UserCreatedEvent,
-  UserDeletedEvent,
-} from './user.aggregate'
+import { UserAggregateEventEnum } from './user.aggregate'
 import { UserAggregateState } from './user.aggregate.state'
+import { DomainEvent } from '../../core/ddd/domain-event'
+import { UserCreatedEvent } from './events/user-created.event'
+import { PasswordChangedEvent } from './events/password-changed.event'
+import { UserDeletedEvent } from './events/user-deleted.event'
 
 export type Projection<State, Event extends DomainEvent<string, unknown>> = {
   project: (event: Event, currentState: State | null) => State

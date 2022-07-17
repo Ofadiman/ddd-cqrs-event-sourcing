@@ -1,104 +1,15 @@
-import { v4 } from 'uuid'
 import { UserSnapshot } from '../../database/models/user.snapshot.model'
-import { Projection, UserProjection } from './user.projection'
+import { UserProjection } from './user.projection'
 import { UserAggregateState } from './user.aggregate.state'
+import { UserCreatedEvent } from './events/user-created.event'
+import { PasswordChangedEvent } from './events/password-changed.event'
+import { UserDeletedEvent } from './events/user-deleted.event'
+import { Aggregate } from '../../core/ddd/aggregate'
 
 export enum UserAggregateEventEnum {
   Created = 'created',
   PasswordChanged = 'password_changed',
   Deleted = 'deleted',
-}
-
-export abstract class DomainEvent<Name, Payload> {
-  public readonly id: string
-  public readonly createdAt: string
-  public readonly name: Name
-  public readonly payload: Payload
-
-  public snapshotId: string
-  public sequence: number
-
-  protected constructor(name: Name, payload: Payload) {
-    this.name = name
-    this.payload = payload
-    this.createdAt = new Date().toISOString()
-    this.id = v4()
-  }
-}
-
-export type UserCreatedEventPayload = {
-  readonly name: string
-  readonly email: string
-  readonly passwordHash: string
-}
-
-export class UserCreatedEvent extends DomainEvent<
-  UserAggregateEventEnum.Created,
-  UserCreatedEventPayload
-> {
-  public constructor(payload: UserCreatedEventPayload) {
-    super(UserAggregateEventEnum.Created, payload)
-  }
-}
-
-export type PasswordChangedEventPayload = {
-  newPasswordHash: string
-}
-
-export class PasswordChangedEvent extends DomainEvent<
-  UserAggregateEventEnum.PasswordChanged,
-  PasswordChangedEventPayload
-> {
-  public constructor(payload: PasswordChangedEventPayload) {
-    super(UserAggregateEventEnum.PasswordChanged, payload)
-  }
-}
-
-export class UserDeletedEvent extends DomainEvent<UserAggregateEventEnum.Deleted, {}> {
-  public constructor() {
-    super(UserAggregateEventEnum.Deleted, {})
-  }
-}
-
-export type AggregateState = {
-  id: string
-  version: number
-
-  createdAt: string
-  updatedAt: string
-  deletedAt: string | null
-}
-
-export abstract class Aggregate<State extends AggregateState, Event extends DomainEvent<any, any>> {
-  protected abstract projection: Projection<State, Event>
-
-  protected state: State | null = null
-  protected events: Event[] = []
-
-  public getUncommittedEvents(): Event[] {
-    return this.events
-  }
-
-  public clearEvents() {
-    this.events = []
-  }
-
-  public getState(): Readonly<State> {
-    if (this.state === null) {
-      throw new Error('State in aggregate is null.')
-    }
-
-    return this.state
-  }
-
-  protected emit(event: Event): void {
-    this.state = this.projection.project(event, this.state)
-
-    event.sequence = this.state.version
-    event.snapshotId = this.state.id
-
-    this.events.push(event)
-  }
 }
 
 export class UserAggregate extends Aggregate<
