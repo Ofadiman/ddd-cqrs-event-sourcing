@@ -2,7 +2,7 @@ import { v4 } from 'uuid'
 import { UserAggregateEventEnum } from './user.aggregate'
 import { UserAggregateState } from './user.aggregate.state'
 import { DomainEvent } from '../../core/ddd/domain-event'
-import { UserCreatedEvent } from './events/user-created.event'
+import { UserRegisteredEvent } from './events/user-registered.event'
 import { PasswordChangedEvent } from './events/password-changed.event'
 import { UserDeletedEvent } from './events/user-deleted.event'
 
@@ -12,13 +12,13 @@ export type Projection<State, Event extends DomainEvent<string, unknown>> = {
 
 export class UserProjection
   implements
-    Projection<UserAggregateState, UserCreatedEvent | PasswordChangedEvent | UserDeletedEvent>
+    Projection<UserAggregateState, UserRegisteredEvent | PasswordChangedEvent | UserDeletedEvent>
 {
   public project(
-    event: UserCreatedEvent | PasswordChangedEvent | UserDeletedEvent,
+    event: UserRegisteredEvent | PasswordChangedEvent | UserDeletedEvent,
     currentState: UserAggregateState | null,
   ): UserAggregateState {
-    if (event.name === UserAggregateEventEnum.Created) {
+    if (event.name === UserAggregateEventEnum.Registered) {
       return {
         id: v4(),
         version: 1,

@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, IsUUID, MaxLength, MinLength } from 'class-validator'
 
-export class CreateUserRequestBodyDto {
+export class RegisterUserRequestBodyDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
@@ -21,7 +21,7 @@ export class CreateUserRequestBodyDto {
   public readonly password: string
 }
 
-export class CreateUserResponseBodyDto {
+export class RegisterUserResponseBodyDto {
   @IsUUID()
   public readonly id: string
 }

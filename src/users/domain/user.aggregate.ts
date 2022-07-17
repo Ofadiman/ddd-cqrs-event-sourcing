@@ -1,14 +1,14 @@
 import { UserSnapshot } from '../../database/models/user.snapshot.model'
 import { UserProjection } from './user.projection'
 import { UserAggregateState } from './user.aggregate.state'
-import { UserCreatedEvent } from './events/user-created.event'
+import { UserRegisteredEvent } from './events/user-registered.event'
 import { PasswordChangedEvent } from './events/password-changed.event'
 import { UserDeletedEvent } from './events/user-deleted.event'
 import { Aggregate } from '../../core/ddd/aggregate'
 import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception'
 
 export enum UserAggregateEventEnum {
-  Created = 'created',
+  Registered = 'registered',
   PasswordChanged = 'password_changed',
   Deleted = 'deleted',
 }
@@ -19,7 +19,10 @@ export type SerializableAggregate<Snapshot> = {
 }
 
 export class UserAggregate
-  extends Aggregate<UserAggregateState, UserCreatedEvent | PasswordChangedEvent | UserDeletedEvent>
+  extends Aggregate<
+    UserAggregateState,
+    UserRegisteredEvent | PasswordChangedEvent | UserDeletedEvent
+  >
   implements SerializableAggregate<UserSnapshot>
 {
   protected projection = new UserProjection()
@@ -59,19 +62,19 @@ export class UserAggregate
   }
 
   public register(args: {
-    existingUser: UserAggregate | undefined
+    existingUserAggregate: UserAggregate | undefined
     newUserDetails: {
       name: string
       email: string
       passwordHash: string
     }
   }) {
-    if (args.existingUser) {
+    if (args.existingUserAggregate) {
       throw new UserAlreadyExistsException({ email: args.newUserDetails.email })
     }
 
     this.emit(
-      new UserCreatedEvent({
+      new UserRegisteredEvent({
         name: args.newUserDetails.name,
         email: args.newUserDetails.email,
         passwordHash: args.newUserDetails.passwordHash,

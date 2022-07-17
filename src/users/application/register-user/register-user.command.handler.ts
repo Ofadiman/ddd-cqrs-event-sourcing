@@ -1,4 +1,4 @@
-import { CreateUserCommand } from './create-user.command'
+import { RegisterUserCommand } from './register-user.command'
 import { UserAggregateRepository } from '../../infrastructure/user.aggregate.repository'
 import { UserPasswordService } from '../../infrastructure/user.password.service'
 import { UserAggregate } from '../../domain/user.aggregate'
@@ -6,21 +6,21 @@ import { CommandHandler } from '../../../core/cqrs/commands/command-handler.deco
 import { ICommandHandler } from '../../../core/cqrs/commands/command-handler.type'
 import { CommandOutput } from '../../../core/cqrs/commands/command-output.type'
 
-@CommandHandler(CreateUserCommand)
-export class CreateUserCommandHandler implements ICommandHandler<CreateUserCommand> {
+@CommandHandler(RegisterUserCommand)
+export class RegisterUserCommandHandler implements ICommandHandler<RegisterUserCommand> {
   public constructor(
     private readonly userAggregateRepository: UserAggregateRepository,
     private readonly userPasswordService: UserPasswordService,
   ) {}
 
-  public async handle(command: CreateUserCommand): Promise<CommandOutput<CreateUserCommand>> {
-    const existingUser = await this.userAggregateRepository.getByEmail(command.input.email)
+  public async handle(command: RegisterUserCommand): Promise<CommandOutput<RegisterUserCommand>> {
+    const existingUserAggregate = await this.userAggregateRepository.getByEmail(command.input.email)
     const passwordHash = await this.userPasswordService.hash(command.input.password)
 
     const userAggregate = new UserAggregate()
 
     userAggregate.register({
-      existingUser,
+      existingUserAggregate,
       newUserDetails: {
         name: command.input.name,
         email: command.input.email,
