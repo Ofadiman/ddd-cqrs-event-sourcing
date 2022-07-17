@@ -2,10 +2,12 @@ import { CreateUserCommand } from './create-user.command'
 import { UserAggregateRepository } from '../../infrastructure/user.aggregate.repository'
 import { UserPasswordService } from '../../infrastructure/user.password.service'
 import { UserAggregate } from '../../domain/user.aggregate'
-import { CommandHandler, CommandOutput, Handler } from '../../../core/cqrs/commands'
+import { CommandHandler } from '../../../core/cqrs/commands/command-handler.decorator'
+import { ICommandHandler } from '../../../core/cqrs/commands/command-handler.type'
+import { CommandOutput } from '../../../core/cqrs/commands/command-output.type'
 
 @CommandHandler(CreateUserCommand)
-export class CreateUserCommandHandler implements Handler<CreateUserCommand> {
+export class CreateUserCommandHandler implements ICommandHandler<CreateUserCommand> {
   public constructor(
     private readonly userAggregateRepository: UserAggregateRepository,
     private readonly userPasswordService: UserPasswordService,

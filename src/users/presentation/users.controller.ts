@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common'
 import { CreateUserCommand } from '../application/create-user/create-user.command'
 import { CreateUserRequestBodyDto, CreateUserResponseBodyDto } from './dto/create-user.dto'
-import { CommandBus } from '../../core/cqrs/commands'
+import { CommandBus } from '../../core/cqrs/commands/command-bus'
 
 @Controller('users')
 export class UsersController {

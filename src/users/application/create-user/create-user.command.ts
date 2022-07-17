@@ -1,4 +1,4 @@
-import { AbstractCommand } from '../../../core/cqrs/commands'
+import { Command } from '../../../core/cqrs/commands/command'
 
 type CreateUserCommandInput = {
   readonly name: string
@@ -10,7 +10,4 @@ type CreateUserCommandOutput = {
   readonly id: string
 }
 
-export class CreateUserCommand extends AbstractCommand<
-  CreateUserCommandInput,
-  CreateUserCommandOutput
-> {}
+export class CreateUserCommand extends Command<CreateUserCommandInput, CreateUserCommandOutput> {}
