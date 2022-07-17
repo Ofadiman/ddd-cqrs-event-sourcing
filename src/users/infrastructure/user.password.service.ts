@@ -10,4 +10,11 @@ export class UserPasswordService {
   public async compare(password: string, passwordHash: string): Promise<boolean> {
     return bcrypt.compare(password, passwordHash)
   }
+
+  /**
+   * This function simulates implementations of password strength checking.
+   */
+  public async getStrength(_plainPassword: string): Promise<number> {
+    return Math.round(Math.random() * 100)
+  }
 }

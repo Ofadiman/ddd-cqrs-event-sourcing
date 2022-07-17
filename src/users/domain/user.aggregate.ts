@@ -6,6 +6,7 @@ import { PasswordChangedEvent } from './events/password-changed.event'
 import { UserDeletedEvent } from './events/user-deleted.event'
 import { Aggregate } from '../../core/ddd/aggregate'
 import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception'
+import { PasswordTooWeakException } from './exceptions/password-too-weak.exception'
 
 export enum UserAggregateEventEnum {
   Registered = 'registered',
@@ -82,15 +83,30 @@ export class UserAggregate
     )
   }
 
-  public changePassword(args: ConstructorParameters<typeof PasswordChangedEvent>[0]) {
+  public changePassword(args: {
+    hashedPassword: string
+    plainPassword: string
+    passwordStrength: number
+  }) {
+    this.throwOnWeakPassword({
+      password: args.plainPassword,
+      passwordStrength: args.passwordStrength,
+    })
+
     this.emit(
       new PasswordChangedEvent({
-        newPasswordHash: args.newPasswordHash,
+        newPasswordHash: args.hashedPassword,
       }),
     )
   }
 
   public delete() {
     this.emit(new UserDeletedEvent())
+  }
+
+  private throwOnWeakPassword(args: { passwordStrength: number; password: string }): void {
+    if (args.passwordStrength < 50) {
+      throw new PasswordTooWeakException(args.password)
+    }
   }
 }
