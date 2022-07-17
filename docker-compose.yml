@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  api:
+    image: 'docker.io/library/node:16.16.0-alpine3.15'
+    container_name: 'clean_architecture_application'
+    ports:
+      - '3000:3000'
+    command: 'yarn nest start --watch'
+    user: 'node'
+    volumes:
+      - './:/home/node/ddd-cqrs-event-sourcing'
+    working_dir: '/home/node/ddd-cqrs-event-sourcing'
+  database:
+    image: 'docker.io/library/postgres:14.3-alpine'
+    container_name: 'clean_architecture_database'
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: 'postgres'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_USER: 'admin'
