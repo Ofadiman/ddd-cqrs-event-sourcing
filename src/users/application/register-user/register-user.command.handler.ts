@@ -14,13 +14,16 @@ export class RegisterUserCommandHandler implements ICommandHandler<RegisterUserC
   ) {}
 
   public async handle(command: RegisterUserCommand): Promise<CommandOutput<RegisterUserCommand>> {
-    const existingUserAggregate = await this.userAggregateRepository.getByEmail(command.input.email)
+    const isEmailAvailable = await this.userAggregateRepository.isEmailAvailable(
+      command.input.email,
+    )
+
     const passwordHash = await this.userPasswordService.hash(command.input.password)
 
     const userAggregate = new UserAggregate()
 
     userAggregate.register({
-      existingUserAggregate,
+      isEmailAvailable,
       newUserDetails: {
         name: command.input.name,
         email: command.input.email,

@@ -60,4 +60,14 @@ export class UserAggregateRepository implements AggregateRepository<UserAggregat
 
     return userAggregate
   }
+
+  public async isEmailAvailable(email: string): Promise<boolean> {
+    const snapshot = await UserSnapshotModel.query().findOne({ email })
+
+    if (snapshot === undefined) {
+      return true
+    }
+
+    return false
+  }
 }

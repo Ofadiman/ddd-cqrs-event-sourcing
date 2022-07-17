@@ -2,7 +2,7 @@ import { Knex } from 'knex'
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.raw(`
-    create type user_aggregate_event as enum ('created', 'password_changed', 'deleted');
+    create type user_aggregate_event as enum ('registered', 'password_changed', 'deleted');
 
     create table if not exists user_snapshots
     (

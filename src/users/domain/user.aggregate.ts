@@ -5,8 +5,8 @@ import { UserRegisteredEvent } from './events/user-registered.event'
 import { PasswordChangedEvent } from './events/password-changed.event'
 import { UserDeletedEvent } from './events/user-deleted.event'
 import { Aggregate } from '../../core/ddd/aggregate'
-import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception'
 import { PasswordTooWeakException } from './exceptions/password-too-weak.exception'
+import { UserEmailNotAvailableException } from './exceptions/user-email-not-available.exception'
 
 export enum UserAggregateEventEnum {
   Registered = 'registered',
@@ -63,15 +63,15 @@ export class UserAggregate
   }
 
   public register(args: {
-    existingUserAggregate: UserAggregate | undefined
+    isEmailAvailable: boolean
     newUserDetails: {
       name: string
       email: string
       passwordHash: string
     }
   }) {
-    if (args.existingUserAggregate) {
-      throw new UserAlreadyExistsException({ email: args.newUserDetails.email })
+    if (!args.isEmailAvailable) {
+      throw new UserEmailNotAvailableException(args.newUserDetails.email)
     }
 
     this.emit(

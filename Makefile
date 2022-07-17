@@ -52,3 +52,7 @@ migrations/rollback_latest_migrations_batch:
 
 migrations/rollback_all_migrations:
 	docker compose exec api yarn knex migrate:rollback
+
+migrations/recreate_database_schema:
+	make migrations/rollback_all_migrations
+	make migrations/run_all_migrations
