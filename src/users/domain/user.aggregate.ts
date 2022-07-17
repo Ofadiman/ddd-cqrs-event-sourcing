@@ -12,11 +12,35 @@ export enum UserAggregateEventEnum {
   Deleted = 'deleted',
 }
 
-export class UserAggregate extends Aggregate<
-  UserAggregateState,
-  UserCreatedEvent | PasswordChangedEvent | UserDeletedEvent
-> {
+export type SerializableAggregate<Snapshot> = {
+  toSnapshot: () => Snapshot
+  restore: (snapshot: Snapshot) => void
+}
+
+export class UserAggregate
+  extends Aggregate<UserAggregateState, UserCreatedEvent | PasswordChangedEvent | UserDeletedEvent>
+  implements SerializableAggregate<UserSnapshot>
+{
   protected projection = new UserProjection()
+
+  public toSnapshot(): UserSnapshot {
+    if (this.state === null) {
+      throw new Error('Domain error.')
+    }
+
+    return {
+      id: this.state.id,
+      version: this.state.version,
+
+      created_at: this.state.createdAt,
+      updated_at: this.state.updatedAt,
+      deleted_at: this.state.deletedAt,
+
+      name: this.state.name,
+      email: this.state.email,
+      password_hash: this.state.passwordHash,
+    }
+  }
 
   public restore(snapshot: UserSnapshot): void {
     this.state = {

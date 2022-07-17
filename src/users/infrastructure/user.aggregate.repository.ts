@@ -3,7 +3,6 @@ import { UserAggregate } from '../domain/user.aggregate'
 import { Model } from 'objection'
 import { UserSnapshotModel } from '../../database/models/user.snapshot.model'
 import { UserEventModel } from '../../database/models/user.event.model'
-import { UserAggregateAdapter } from '../domain/user.aggregate.adapter'
 
 export type AggregateRepository<Aggregate> = {
   save(aggregate: Aggregate): Promise<string>
@@ -12,10 +11,8 @@ export type AggregateRepository<Aggregate> = {
 
 @Injectable()
 export class UserAggregateRepository implements AggregateRepository<UserAggregate> {
-  public constructor(private readonly userAggregateAdapter: UserAggregateAdapter) {}
-
   public async save(aggregate: UserAggregate): Promise<string> {
-    const snapshot = this.userAggregateAdapter.fromAggregateToSnapshot(aggregate)
+    const snapshot = aggregate.toSnapshot()
 
     await Model.transaction(async (trx) => {
       await UserSnapshotModel.query(trx).insert(snapshot).onConflict('id').merge()
@@ -45,6 +42,9 @@ export class UserAggregateRepository implements AggregateRepository<UserAggregat
       throw new Error('Aggregate not found!')
     }
 
-    return this.userAggregateAdapter.fromSnapshotToAggregate(snapshot)
+    const userAggregate = new UserAggregate()
+    userAggregate.restore(snapshot)
+
+    return userAggregate
   }
 }
